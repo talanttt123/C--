@@ -112,6 +112,7 @@ int stolbec(char figura[3]) {
         return 8;
         default: 
          return 0;   
+         break;
     }
 }
 
@@ -141,9 +142,71 @@ int stroka(char figura[3]) {
         return 8;
         default: 
          return 0;   
+         break;
 }
 }
-   
+
+int novii_stolbec(char kletka[3])
+ {
+    char m = kletka[0];
+
+    
+    if (m >= '1' && m <= '8') {
+        m = kletka[1];
+    }
+
+    switch (m) {
+        case 'a':
+         return 1;
+        case 'b':
+         return 2;
+        case 'c':
+         return 3;
+        case 'd':
+         return 4;
+        case 'e':
+         return 5;
+        case 'f':
+         return 6;                              //номер столбца, уходит в переменную nom_stolbca
+        case 'g':
+         return 7;
+        case 'h':
+        return 8;
+        default: 
+         return 0;  
+         break; 
+    }
+}
+
+int novaya_stroka(char kletka[3]) {
+    char m = kletka[0];
+
+    if (m >= 'a' && m <= 'h') {
+        m = kletka[1];
+    }
+
+    switch (m) {
+        case '1': 
+        return 1;
+        case '2': 
+        return 2;
+        case '3':
+         return 3;
+        case '4':
+         return 4;
+        case '5': 
+        return 5;                               //номер строки, уходит в переменную nom_stroki
+        case '6':
+         return 6;
+        case '7':
+         return 7;
+        case '8': 
+        return 8;
+        default: 
+         return 0;
+         break;   
+}
+}
 
 int main() {
     SetConsoleCP(CP_UTF8);
@@ -175,17 +238,22 @@ int main() {
     
     printf("\nВведите клетку фигуры для ее выбора:");
         scanf("%2s",figura);
-
-    int nom_stolbca= stolbec(figura);
     int nom_stroki= stroka(figura);
+    int nom_stolbca= stolbec(figura);
+    
+    
 
     printf("Введите поле для хода:");
         scanf("%2s",kletka);
-    printf("Ваш ход: %s--->%s \n Нажмите Enter чтобы поддвердить ход или введите любой символ для сброса параметров хода ",figura,kletka);
+    int novii_nom_stroki= novaya_stroka(kletka);
+    int novii_nom_stolbca= novii_stolbec(kletka);
+    
+    
+    printf("Ваш ход: %s--->%s \n Нажмите Enter чтобы поддвердить ход или введите любой символ для сброса параметров хода \n",figura,kletka);
     
 
-    printf("%d\n%d", nom_stroki,nom_stolbca);
-
+    printf("Откуда: строка %d столбец %d\n",nom_stroki,nom_stolbca);
+    printf("Куда: строка %d столбец %d\n",novii_nom_stroki,novii_nom_stolbca);
             return 0;
 
 
