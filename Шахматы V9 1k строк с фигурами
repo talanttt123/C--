@@ -1,0 +1,983 @@
+#include <stdio.h>
+#include <windows.h>
+
+HANDLE hConsole;
+// Массив фигур
+int pole[8][8]=
+ {
+        {-4,-3,-2,-5,-6,-2,-3,-4},
+        {-1,-1,-1,-1,-1,-1,-1,-1},
+        { 0, 0, 0, 0, 0, 0, 0, 0},
+        { 0, 0, 0, 0, 0, 0, 0, 0},
+        { 0, 0, 0, 0, 0, 0, 0, 0},
+        { 0, 0, 0, 0, 0, 0, 0, 0},
+        { 1, 1, 1, 1, 1, 1, 1, 1},
+        { 4, 3, 2, 5, 6, 2, 3, 4}
+    };
+
+// Установка цвета: text — цвет символа, bg — цвет фона
+void setColor(int text, int bg) {
+    SetConsoleTextAttribute(hConsole, (bg << 4) | text);
+}
+ 
+// Переопределение цвета в палитре консоли
+void setPaletteColor(int index, int r, int g, int b) 
+{                  //вайб код шняга для покарски
+    CONSOLE_SCREEN_BUFFER_INFOEX info;
+    info.cbSize = sizeof(info);
+    GetConsoleScreenBufferInfoEx(hConsole, &info);
+    info.ColorTable[index] = RGB(r, g, b);
+    SetConsoleScreenBufferInfoEx(hConsole, &info);
+}
+
+
+
+//Иконки фигур на доске
+
+void orobrazheniefigur(int f)
+{
+    switch (f) 
+    {
+        case -5: printf("♔"); break;
+        case -6: printf("♕"); break;
+        case -4: printf("♖"); break;
+        case -2: printf("♗"); break;
+        case -3: printf("♘"); break;
+        case -1: printf("♙"); break;
+        case  5: printf("♚"); break;
+        case  6: printf("♛"); break;
+        case  4: printf("♜"); break;
+        case  2: printf("♝"); break;
+        case  3: printf("♞"); break;
+        case  1: printf("♟"); break;
+        default: printf(" "); break;
+}}
+// сама  доска
+
+void doska(int pole[8][8])
+ {
+    printf("    a   b   c   d   e   f   g   h\n");
+    for (int i = 0; i < 8; i++) {
+    SetConsoleTextAttribute(hConsole, 7);
+    printf("  +---+---+---+---+---+---+---+---+\n");
+    SetConsoleTextAttribute(hConsole, 7);
+    printf("%d |", 8 - i);
+        for (int j = 0; j < 8; j++) {
+           
+            int bg = ((i + j) % 2 == 0) ? 7 : 6;
+
+           
+            int text;
+            if (pole[i][j] < 0) {
+                text = 15;  
+            } else if (pole[i][j] > 0) {
+                text = 0;                                               //доска
+            } else {
+                text = 7;
+            }
+
+            setColor(text, bg);
+            printf(" ");
+            orobrazheniefigur(pole[i][j]);   
+            printf(" ");
+
+            SetConsoleTextAttribute(hConsole, 7);
+            printf("|");
+        }
+
+        SetConsoleTextAttribute(hConsole, 7);
+        printf(" %d\n", 8 - i);
+    }
+
+    SetConsoleTextAttribute(hConsole, 7);
+    printf("  +---+---+---+---+---+---+---+---+\n");
+    printf("    a   b   c   d   e   f   g   h\n");
+}
+int stolbec(char figura[3])
+ {
+    char c = figura[0];
+
+    
+    if (c >= '1' && c <= '8') 
+    {
+        c = figura[1];
+    }
+
+    switch (c) {
+        case 'a':
+         return 1;
+        case 'b':
+         return 2;
+        case 'c':
+         return 3;
+        case 'd':
+         return 4;
+        case 'e':
+         return 5;
+        case 'f':
+         return 6;                              //номер столбца, уходит в переменную nom_stolbca
+        case 'g':
+         return 7;
+        case 'h':
+        return 8;
+        case 'A':
+         return 1;
+        case 'B':
+         return 2;
+        case 'C':
+         return 3;
+        case 'D':
+         return 4;
+        case 'E':
+         return 5;
+        case 'F':
+         return 6;                              //номер столбца, уходит в переменную nom_stolbca
+        case 'G':
+         return 7;
+        case 'H':
+        return 8;
+        default: 
+         return 0;   
+         break;
+    }
+}
+
+int stroka(char figura[3]) {
+    char c = figura[0];
+
+    if (c >= 'a' && c <= 'h')
+     {
+        c = figura[1];
+    }
+
+    switch (c) {
+        case '1': 
+        return 1;
+        case '2': 
+        return 2;
+        case '3':
+         return 3;
+        case '4':
+         return 4;
+        case '5': 
+        return 5;                               //номер строки, уходит в переменную nom_stroki
+        case '6':
+         return 6;
+        case '7':
+         return 7;
+        case '8': 
+        return 8;
+        default: 
+         return 0;   
+         break;
+}
+}
+
+int novii_stolbec(char kletka[3])
+ {
+    char m = kletka[0];
+
+    if (m >= '1' && m <= '8') 
+    {
+        m = kletka[1];
+    }
+
+    switch (m) {
+        case 'a':
+         return 1;
+        case 'b':
+         return 2;
+        case 'c':
+         return 3;
+        case 'd':
+         return 4;
+        case 'e':
+         return 5;
+        case 'f':
+         return 6;                              //номер столбца, уходит в переменную nom_stolbca
+        case 'g':
+         return 7;
+        case 'h':
+        return 8;
+        case 'A':
+         return 1;
+        case 'B':
+         return 2;
+        case 'C':
+         return 3;
+        case 'D':
+         return 4;
+        case 'E':
+         return 5;
+        case 'F':
+         return 6;                              //номер столбца, уходит в переменную nom_stolbca
+        case 'G':
+         return 7;
+        case 'H':
+        return 8;
+        default: 
+         return 0;  
+         break; 
+    }
+}
+
+int novaya_stroka(char kletka[3]) 
+{
+    char m = kletka[0];
+
+    if (m >= 'a' && m <= 'h') 
+    {
+        m = kletka[1];
+    }
+
+    switch (m) {
+        case '1': 
+        return 1;
+        case '2': 
+        return 2;
+        case '3':
+         return 3;
+        case '4':
+         return 4;
+        case '5': 
+        return 5;                               //номер строки, уходит в переменную nom_stroki
+        case '6':
+         return 6;
+        case '7':
+         return 7;
+        case '8': 
+        return 8;
+        default: 
+         return 0;
+         break;   
+}}
+ //Сам ход или рубка после проверки в proverka
+
+
+bool peshka(int pole[8][8],int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+ if (pole[ishodnaya_stroka][ishodnii_stolbec]==1)
+    {
+        // Ход вперёд на 1
+        if (ishodnaya_stroka - 1==stroka_hoda && ishodnii_stolbec==stolbec_hoda)
+            {
+            if (ishodnaya_stroka - 1 >=0 && pole[ishodnaya_stroka-1][ishodnii_stolbec]==0)
+                return true;
+    }   
+
+     // Ход вперёд на 2 (с начальной позиции, индекс 6)
+        if (ishodnaya_stroka ==6 && ishodnaya_stroka - 2==stroka_hoda && ishodnii_stolbec==stolbec_hoda)
+{
+        if (pole[ishodnaya_stroka-1][ishodnii_stolbec]==0 &&pole[ishodnaya_stroka-2][ishodnii_stolbec]==0)
+            return true;
+}
+
+
+        // Взятие влево-вверх
+        if (ishodnaya_stroka - 1==stroka_hoda &&
+            ishodnii_stolbec - 1==stolbec_hoda)
+     {
+            if (ishodnaya_stroka - 1 >=0 && ishodnii_stolbec - 1 >=0 &&pole[ishodnaya_stroka-1][ishodnii_stolbec-1]<0)
+                return true;
+     }
+
+        // Взятие вправо-вверх
+        if (ishodnaya_stroka - 1==stroka_hoda && ishodnii_stolbec + 1==stolbec_hoda)
+    {
+            if (ishodnaya_stroka - 1 >=0 && ishodnii_stolbec + 1 <8 && pole[ishodnaya_stroka-1][ishodnii_stolbec+1]<0)
+                return true;
+    }
+
+    return false;
+}
+
+    // ЧЁРНАЯ ПЕШКА
+    if (pole[ishodnaya_stroka][ishodnii_stolbec]==-1)
+{
+     // Ход вперёд на 1
+        if (ishodnaya_stroka + 1==stroka_hoda && ishodnii_stolbec==stolbec_hoda)
+{
+            if (ishodnaya_stroka + 1 <8 && pole[ishodnaya_stroka+1][ishodnii_stolbec]==0)
+                return true;
+ }
+
+        // первый ход пешки
+        if (ishodnaya_stroka==1 && ishodnaya_stroka + 2==stroka_hoda && ishodnii_stolbec==stolbec_hoda)
+            {
+        if (pole[ishodnaya_stroka+1][ishodnii_stolbec]==0 && pole[ishodnaya_stroka+2][ishodnii_stolbec]==0)
+            return true;
+    }
+        // Взятие влево вниз
+        if (ishodnaya_stroka + 1==stroka_hoda && ishodnii_stolbec - 1==stolbec_hoda)
+     {
+            if (ishodnaya_stroka + 1 <8 && ishodnii_stolbec - 1>=0 && pole[ishodnaya_stroka+1][ishodnii_stolbec-1]>0)
+                return true;
+    }
+
+        // Взятие вправо-вниз
+        if (ishodnaya_stroka + 1==stroka_hoda && ishodnii_stolbec + 1==stolbec_hoda)
+    {
+            if (ishodnaya_stroka + 1 <8 && ishodnii_stolbec + 1 <8 && pole[ishodnaya_stroka+1][ishodnii_stolbec+1]>0)
+                return true;
+   }
+
+
+return false;
+    }
+
+
+return false;
+
+}
+//Дописать превращение пешки
+// И взятие на проходе
+
+
+
+
+
+    
+bool slon(int pole[8][8],int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+    
+    
+       if ((stroka_hoda - ishodnaya_stroka)==(-(stolbec_hoda - ishodnii_stolbec))|| (stroka_hoda - ishodnaya_stroka)==((stolbec_hoda - ishodnii_stolbec)) ) 
+        {
+          int proveraemii_stroka =ishodnaya_stroka;
+           int proveraemii_stolbec= ishodnii_stolbec;
+            int a=1;
+                int b=1;
+            while(proveraemii_stroka !=stroka_hoda || proveraemii_stolbec != stolbec_hoda )
+            {
+
+         
+    if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+                // влево верх
+             if (stroka_hoda<ishodnaya_stroka && stolbec_hoda<ishodnii_stolbec)
+                    {   
+                
+              proveraemii_stroka=ishodnaya_stroka-a;
+              proveraemii_stolbec= ishodnii_stolbec-b;
+              if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                    b+=1;
+                 }
+                //вправо вверх
+                if (stroka_hoda<ishodnaya_stroka && stolbec_hoda>ishodnii_stolbec)
+                     {   
+                
+                 proveraemii_stroka=ishodnaya_stroka-a;
+                 proveraemii_stolbec=ishodnii_stolbec+b;
+                 if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+                if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                       {
+                
+                
+                return false;
+                  }
+                  a+=1;
+                b+=1;
+                      }
+                //Влево вниз
+                if (stroka_hoda>ishodnaya_stroka && stolbec_hoda<ishodnii_stolbec)
+                   {   
+                
+             proveraemii_stroka=ishodnaya_stroka+a;
+             proveraemii_stolbec=ishodnii_stolbec-b;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                     {
+                
+                
+                return false;
+                  }
+                a+=1;
+                b+=1;
+                      }
+             //вправо вниз
+             if (stroka_hoda>ishodnaya_stroka && stolbec_hoda>ishodnii_stolbec)
+        
+                 {   
+              
+              proveraemii_stroka=ishodnaya_stroka+a;
+               proveraemii_stolbec=ishodnii_stolbec+b;
+               if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+               if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                
+                
+                    return false;
+                }
+              a+=1;
+              b+=1;
+                }
+            }
+                return true;
+           
+        }
+return false; 
+}
+bool kon(int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+    //весь конь в пару длинных строк строк)))
+ if 
+(       (stroka_hoda - 2==ishodnaya_stroka && (stolbec_hoda -1==ishodnii_stolbec || stolbec_hoda +1==ishodnii_stolbec ))     ||   (stroka_hoda + 2==ishodnaya_stroka  && (stolbec_hoda -1==ishodnii_stolbec || stolbec_hoda +1==ishodnii_stolbec)       )
+    ||
+    (stroka_hoda - 1==ishodnaya_stroka && (stolbec_hoda -2==ishodnii_stolbec || stolbec_hoda +2==ishodnii_stolbec ))     ||   (stroka_hoda + 1==ishodnaya_stroka  && (stolbec_hoda -2==ishodnii_stolbec || stolbec_hoda +2==ishodnii_stolbec)       )
+)
+       {
+        return true;
+        
+}
+else
+{
+    return false;
+}
+}
+bool ladiya(int pole[8][8],int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+if ( (stroka_hoda==ishodnaya_stroka||stolbec_hoda == ishodnii_stolbec)  )
+
+       {
+       int proveraemii_stroka=ishodnaya_stroka;
+           int proveraemii_stolbec=ishodnii_stolbec;
+            int a=1;
+            while(proveraemii_stroka !=stroka_hoda || proveraemii_stolbec != stolbec_hoda )
+         {
+                // Вверх
+             if (stroka_hoda<ishodnaya_stroka)
+                    {   
+                
+                
+             proveraemii_stroka=ishodnaya_stroka-a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+                //Внииз
+                if (stroka_hoda>ishodnaya_stroka)
+                    {   
+                
+                
+             proveraemii_stroka=ishodnaya_stroka+a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+                //Влево 
+               if (ishodnii_stolbec>stolbec_hoda)
+                    {   
+                
+                
+             proveraemii_stolbec=ishodnii_stolbec-a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+             //вправо 
+           if (ishodnii_stolbec<stolbec_hoda)
+                    {   
+                
+                
+             proveraemii_stolbec=ishodnii_stolbec+a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+            }
+
+
+        return true;
+    }
+else
+{
+    return false;
+}
+}
+bool korol(int pole[8][8],int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+if ((ishodnaya_stroka - 1==stroka_hoda || ishodnaya_stroka + 1==stroka_hoda) && ishodnii_stolbec==stolbec_hoda || (ishodnii_stolbec +1 ==stolbec_hoda || ishodnii_stolbec -1 ==stolbec_hoda )&& ishodnaya_stroka==stroka_hoda ||(ishodnaya_stroka - 1==stroka_hoda || ishodnaya_stroka + 1==stroka_hoda) && (ishodnii_stolbec-1==stolbec_hoda||ishodnii_stolbec+1==stolbec_hoda))
+            {
+            
+            return true;
+    }   
+    return false;
+}
+bool ferz(int pole[8][8],int ishodnaya_stroka,int  ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+ if ((stroka_hoda - ishodnaya_stroka)==(-(stolbec_hoda - ishodnii_stolbec))|| (stroka_hoda - ishodnaya_stroka)==((stolbec_hoda - ishodnii_stolbec)) ) 
+        {
+          int proveraemii_stroka =100;
+           int proveraemii_stolbec= 100;
+            int a=1;
+                int b=1;
+            while(proveraemii_stroka !=stroka_hoda || proveraemii_stolbec != stolbec_hoda )
+            {
+
+         
+    if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+                // влево верх
+             if (stroka_hoda<ishodnaya_stroka && stolbec_hoda<ishodnii_stolbec)
+                    {   
+                
+              proveraemii_stroka=ishodnaya_stroka-a;
+              proveraemii_stolbec= ishodnii_stolbec-b;
+              if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                    b+=1;
+                 }
+                //вправо вверх
+                if (stroka_hoda<ishodnaya_stroka && stolbec_hoda>ishodnii_stolbec)
+                     {   
+                
+                 proveraemii_stroka=ishodnaya_stroka-a;
+                 proveraemii_stolbec=ishodnii_stolbec+b;
+                 if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+                if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                       {
+                
+                
+                return false;
+                  }
+                  a+=1;
+                b+=1;
+                      }
+                //Влево вниз
+                if (stroka_hoda>ishodnaya_stroka && stolbec_hoda<ishodnii_stolbec)
+                   {   
+                
+             proveraemii_stroka=ishodnaya_stroka+a;
+             proveraemii_stolbec=ishodnii_stolbec-b;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                     {
+                
+                
+                return false;
+                  }
+                a+=1;
+                b+=1;
+                      }
+             //вправо вниз
+             if (stroka_hoda>ishodnaya_stroka && stolbec_hoda>ishodnii_stolbec)
+        
+                 {   
+              
+              proveraemii_stroka=ishodnaya_stroka+a;
+               proveraemii_stolbec=ishodnii_stolbec+b;
+               if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+               if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                
+                
+                    return false;
+                }
+              a+=1;
+              b+=1;
+                }
+            }
+                return true;
+           
+        }
+
+        if ( (stroka_hoda==ishodnaya_stroka||stolbec_hoda == ishodnii_stolbec)  )
+
+       {
+       int proveraemii_stroka=ishodnaya_stroka;
+           int proveraemii_stolbec=ishodnii_stolbec;
+            int a=1;
+            while(proveraemii_stroka !=stroka_hoda || proveraemii_stolbec != stolbec_hoda )
+         {
+                // Вверх
+             if (stroka_hoda<ishodnaya_stroka)
+                    {   
+                
+                
+             proveraemii_stroka=ishodnaya_stroka-a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+                //Внииз
+                if (stroka_hoda>ishodnaya_stroka)
+                    {   
+                
+                
+             proveraemii_stroka=ishodnaya_stroka+a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+                //Влево 
+               if (ishodnii_stolbec>stolbec_hoda)
+                    {   
+                
+                
+             proveraemii_stolbec=ishodnii_stolbec-a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+             //вправо 
+           if (ishodnii_stolbec<stolbec_hoda)
+                    {   
+                
+                
+             proveraemii_stolbec=ishodnii_stolbec+a;
+             if (proveraemii_stroka == stroka_hoda && proveraemii_stolbec == stolbec_hoda)
+        break;
+             if (pole[proveraemii_stroka][proveraemii_stolbec]!=0)
+                    {
+                     
+                  return false;
+                
+                     }
+                     a+=1;
+                      
+                 }
+            }
+
+
+        return true;
+    }
+
+
+else
+{
+    return false;
+}
+
+}
+// bool ferz(int pole[8][8], int ishodnaya_stroka, int ishodnii_stolbec,
+//           int stroka_hoda, int stolbec_hoda)
+// {
+//     if (slon(pole, ishodnaya_stroka, ishodnii_stolbec, stroka_hoda, stolbec_hoda)){
+//         return true;
+//}
+//     if (ladiya(pole, ishodnaya_stroka, ishodnii_stolbec, stroka_hoda, stolbec_hoda)){
+//         return true;
+//}
+//     return false;
+// } мб так ваще сделать хз
+ //мнимые ходы проверяются по идее должен проверять какие ходы мозможны в целом
+bool proverka(int pole[8][8],int ishodnaya_stroka,int ishodnii_stolbec,int stroka_hoda,int stolbec_hoda)
+{
+     
+   
+    //Провекра что не на ту же клетку ход
+    if (stroka_hoda== ishodnaya_stroka && stolbec_hoda==ishodnii_stolbec)
+    {
+        printf("\nНЕЛЬЗЯ ХОДИТЬ НА ТУ ЖЕ КЛЕТКУ\n");
+        return false;
+    }
+    //проверка что белые не рубят белых
+    if(pole[ishodnaya_stroka][ishodnii_stolbec]>0)
+    {
+        if (pole[stroka_hoda][stolbec_hoda]>0){
+        printf("\nНЕЛЬЗЯ СРУБАТЬ СОЮЗНУЮ ФИГУРУ\n");
+        return false;
+        }
+    }
+    if (pole[ishodnaya_stroka][ishodnii_stolbec] == 0) {
+    printf("ТАМ НЕТ ФИГУРЫ\n");
+    return false;
+
+    }
+    //проверка что негры не рубят негров
+     if (pole[ishodnaya_stroka][ishodnii_stolbec]<0)
+    {
+        if (pole[stroka_hoda][stolbec_hoda]<0){
+        printf("\nНЕЛЬЗЯ СРУБАТЬ СОЮЗНУЮ ФИГУРУ\n");
+        return false;
+        }
+       
+    }
+ 
+    
+    switch (pole[ishodnaya_stroka][ishodnii_stolbec])
+    {
+            //пешка
+        case 1: 
+            case -1:
+            return peshka(pole, ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+ 
+    case 2:
+        case -2:
+        return slon(pole, ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+       
+    case 3:
+        case -3:
+        return kon(ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+        
+    case 4:
+        case -4:
+        return ladiya(pole, ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+        
+    case 5:
+        case -5:
+        return korol(pole, ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+        
+    case 6:
+        case -6:
+
+        return ferz(pole, ishodnaya_stroka, ishodnii_stolbec,stroka_hoda, stolbec_hoda);
+        
+    
+    default:
+    return false;
+    }
+   
+    
+//  //можно ли уйти королем
+// if ()
+// {
+//     /* code */
+// }
+
+
+//  //Можно ли закрытся фигурой
+// if ()
+// {
+//     /* code */
+// }
+
+
+ //Можно ли срубить нападающую
+ //if ()
+// {
+ //}
+return false;
+
+}
+
+
+
+
+void hod_rubka(int nom_stroki,int nom_stolbca,int novii_nom_stroki,int novii_nom_stolbca)
+    {
+   
+            
+        
+
+
+
+    
+    
+  
+ 
+// ход о очистка исходной клетки
+pole[novii_nom_stroki][ novii_nom_stolbca]= pole[nom_stroki][nom_stolbca];
+pole[nom_stroki][nom_stolbca]=0;
+        
+//Проверка можно ли делать ход не должная пускать в hod_rubka если чето не так
+    
+
+
+}
+
+
+
+
+
+
+
+int main() {
+    
+
+//визуал
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    setPaletteColor(7, 210, 180, 140);
+    setPaletteColor(6, 150, 110, 70);  
+    
+    //Массивы для хранения координат клеток
+    char figura[3];
+    char kletka[3];
+    doska(pole);
+//бесконечный цикл
+    int kolvo_hodov=0;
+    while(true)
+    
+
+    {
+        
+      
+        
+    if(kolvo_hodov%2==0){
+    printf("Ход белых");
+        continue;
+    
+    //ввод координат фигуры
+    printf("\nВведите клетку фигуры для ее выбора:");
+        scanf(" %2s", figura);
+    int nom_stroki= stroka(figura);
+    int nom_stolbca= stolbec(figura);
+    
+    
+// куда ходить
+    printf("Введите поле для хода:");
+        scanf(" %2s", kletka);
+    int novii_nom_stroki= novaya_stroka(kletka);
+    int novii_nom_stolbca= novii_stolbec(kletka);
+    
+    // поддветждение (надо сделать сброс)
+    printf("Ваш ход: %s--->%s \n Нажмите Enter чтобы поддвердить ход или введите любой символ для сброса параметров хода \n",figura,kletka);
+
+    //Просчет номера элемента в массиве а не на поле т.к там с нулевого элемента считается
+    int strokamasiva=  8- nom_stroki;  
+int stolbecmasiva = nom_stolbca - 1;
+int novii_strokamasiva = 8- novii_nom_stroki;
+    int novii_stolbecmasiva = novii_nom_stolbca - 1;
+
+
+        if (pole[strokamasiva][stolbecmasiva] < 0) {
+
+        printf("Сейчас ход белых! Вы выбрали чёрную фигуру.\n");
+        continue;
+        }
+
+
+    //вызов проверки, если функция proverka_hod_rubka возвтращает true то делается ходик если false то отмена 
+        if (proverka(pole,strokamasiva,stolbecmasiva,novii_strokamasiva,novii_stolbecmasiva)==true)
+        {
+            hod_rubka(strokamasiva, stolbecmasiva, novii_strokamasiva,novii_stolbecmasiva);
+             kolvo_hodov+=1;
+        }
+        
+    
+    //вывол доски опять после всех действий
+    
+    doska(pole);
+        //для удобства разработки потому что я чет уже запутался
+    printf("Откуда: строка %d столбец %d\n",nom_stroki,nom_stolbca);
+    printf("Куда: строка %d столбец %d\n",novii_nom_stroki,novii_nom_stolbca);
+    
+    }
+    else
+    {
+     printf("Ход черных");
+    
+    
+   
+    //ввод координат фигуры
+    printf("\nВведите клетку фигуры для ее выбора:");
+        scanf(" %2s", figura);
+    int nom_stroki= stroka(figura);
+    int nom_stolbca= stolbec(figura);
+    
+    
+// куда ходить
+    printf("Введите поле для хода:");
+        scanf(" %2s", kletka);
+    int novii_nom_stroki= novaya_stroka(kletka);
+    int novii_nom_stolbca= novii_stolbec(kletka);
+    
+    // поддветждение (надо сделать сброс)
+    printf("Ваш ход: %s--->%s \n Нажмите Enter чтобы поддвердить ход или введите любой символ для сброса параметров хода \n",figura,kletka);
+
+    //Просчет номера элемента в массиве а не на поле т.к там с нулевого элемента считается
+    int strokamasiva=  8- nom_stroki;  
+int stolbecmasiva = nom_stolbca - 1;
+int novii_strokamasiva = 8- novii_nom_stroki;
+    int novii_stolbecmasiva = novii_nom_stolbca - 1;
+        if (pole[strokamasiva][stolbecmasiva] < 0) {
+        printf("Сейчас ход черных! Вы выбрали белую фигуру.\n");
+        continue;
+   
+    //вызов проверки, если функция proverka возвтращает true то делается ходик если false то отмена 
+        if (proverka(pole,strokamasiva,stolbecmasiva,novii_strokamasiva,novii_stolbecmasiva)==true)
+        {
+            hod_rubka(strokamasiva, stolbecmasiva, novii_strokamasiva,novii_stolbecmasiva);
+             kolvo_hodov+=1;
+        }
+        else
+        {
+
+        }
+        
+    
+    //вывол доски опять после всех действий
+    
+    doska(pole);
+        //для удобства разработки потому что я чет уже запутался
+    printf("Откуда: строка %d столбец %d\n",nom_stroki,nom_stolbca);
+    printf("Куда: строка %d столбец %d\n",novii_nom_stroki,novii_nom_stolbca);
+
+    }
+    }
+
+    return 0;
+}
+}
