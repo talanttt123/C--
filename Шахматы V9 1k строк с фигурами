@@ -877,7 +877,7 @@ int main() {
         
     if(kolvo_hodov%2==0){
     printf("Ход белых");
-        continue;
+        
     
     //ввод координат фигуры
     printf("\nВведите клетку фигуры для ее выбора:");
@@ -892,8 +892,6 @@ int main() {
     int novii_nom_stroki= novaya_stroka(kletka);
     int novii_nom_stolbca= novii_stolbec(kletka);
     
-    // поддветждение (надо сделать сброс)
-    printf("Ваш ход: %s--->%s \n Нажмите Enter чтобы поддвердить ход или введите любой символ для сброса параметров хода \n",figura,kletka);
 
     //Просчет номера элемента в массиве а не на поле т.к там с нулевого элемента считается
     int strokamasiva=  8- nom_stroki;  
@@ -902,12 +900,13 @@ int novii_strokamasiva = 8- novii_nom_stroki;
     int novii_stolbecmasiva = novii_nom_stolbca - 1;
 
 
-        if (pole[strokamasiva][stolbecmasiva] < 0) {
+        if (pole[strokamasiva][stolbecmasiva] > 0) {
 
-        printf("Сейчас ход белых! Вы выбрали чёрную фигуру.\n");
+        printf("\n\nvСейчас ход белых! Вы выбрали чёрную фигуру.\n");
+        doska(pole);
         continue;
         }
-
+        
 
     //вызов проверки, если функция proverka_hod_rubka возвтращает true то делается ходик если false то отмена 
         if (proverka(pole,strokamasiva,stolbecmasiva,novii_strokamasiva,novii_stolbecmasiva)==true)
@@ -915,14 +914,14 @@ int novii_strokamasiva = 8- novii_nom_stroki;
             hod_rubka(strokamasiva, stolbecmasiva, novii_strokamasiva,novii_stolbecmasiva);
              kolvo_hodov+=1;
         }
+        else
+    {
         
+    }
     
     //вывол доски опять после всех действий
-    
     doska(pole);
-        //для удобства разработки потому что я чет уже запутался
-    printf("Откуда: строка %d столбец %d\n",nom_stroki,nom_stolbca);
-    printf("Куда: строка %d столбец %d\n",novii_nom_stroki,novii_nom_stolbca);
+   
     
     }
     else
@@ -953,8 +952,10 @@ int stolbecmasiva = nom_stolbca - 1;
 int novii_strokamasiva = 8- novii_nom_stroki;
     int novii_stolbecmasiva = novii_nom_stolbca - 1;
         if (pole[strokamasiva][stolbecmasiva] < 0) {
-        printf("Сейчас ход черных! Вы выбрали белую фигуру.\n");
-        continue;
+        printf("\n\nСейчас ход черных! Вы выбрали белую фигуру.\n");
+        doska(pole);
+         continue;
+        }
    
     //вызов проверки, если функция proverka возвтращает true то делается ходик если false то отмена 
         if (proverka(pole,strokamasiva,stolbecmasiva,novii_strokamasiva,novii_stolbecmasiva)==true)
@@ -964,20 +965,18 @@ int novii_strokamasiva = 8- novii_nom_stroki;
         }
         else
         {
-
+           
         }
         
     
     //вывол доски опять после всех действий
-    
     doska(pole);
-        //для удобства разработки потому что я чет уже запутался
-    printf("Откуда: строка %d столбец %d\n",nom_stroki,nom_stolbca);
-    printf("Куда: строка %d столбец %d\n",novii_nom_stroki,novii_nom_stolbca);
+    
+      
 
     }
     }
 
-    return 0;
+   return 0; 
 }
-}
+
